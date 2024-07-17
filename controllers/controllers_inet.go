@@ -323,11 +323,6 @@ func GetNewDogJson(c *fiber.Ctx) error {
 	var dogs []m.Dogs
 	db.Find(&dogs)
 
-	// ถ้าdog_id อยู่ระหว่าง 10-50 ให้โชว์คำว่า “red”
-	// ถ้าdog_id อยู่ระหว่าง 100-150 ให้โชว์คำว่า “green”
-	// ถ้าdog_id อยู่ระหว่าง 200-250 ให้โชว์คำว่า “pink”
-	// นอกเหนือจากนั้น “no color”
-
 	var dataResults []m.DogsRes //slice
 	countRed := 0
 	countGreen := 0
@@ -428,4 +423,72 @@ func RemoveProfile(c *fiber.Ctx) error {
 	}
 
 	return c.SendStatus(200)
+}
+
+func GetAgeProfile(c *fiber.Ctx) error {
+	db := database.DBConn
+
+	var Profile []m.ProfileUser
+	db.Find(&Profile)
+
+	var dataResults []m.AgeProfile
+	countGenz := 0
+	countGenY := 0
+	countGenX := 0
+	countBabyBoomer := 0
+	countGI := 0
+
+	for _, v := range Profile {
+		typeStr := ""
+		if v.Age < 24 {
+			typeStr = "GenZ"
+			countGenz++
+		} else if v.Age >= 24 && v.Age <= 41 {
+			typeStr = "GenY"
+			countGenY++
+		} else if v.Age >= 42 && v.Age <= 56 {
+			typeStr = "GenX"
+			countGenX++
+		} else if v.Age >= 57 && v.Age <= 75 {
+			typeStr = "Baby Boomer"
+			countBabyBoomer++
+		} else {
+			typeStr = "G.I. Generation"
+			countGI++
+		}
+
+		d := m.AgeProfile{
+			Employee: v.Employee_id,
+			Name:     v.Firstname,
+			Lastname: v.Lastname,
+			Age:      v.Age,
+			Gen:      typeStr,
+		}
+		dataResults = append(dataResults, d)
+	}
+	r := m.ResultAgeProfile{
+		Data:    dataResults,
+		Name:    "Age Profile",
+		Count:   len(Profile),
+		SumGenz: countGenz,
+		SumGenY: countGenY,
+		SumGenX: countGenX,
+		SumBB:   countBabyBoomer,
+		SumGI:   countGI,
+	}
+	return c.Status(200).JSON(r)
+}
+
+func GetSearchProfile(c *fiber.Ctx) error {
+	db := database.DBConn
+
+	search := strings.TrimSpace(c.Query("search"))
+	var Profile []m.ProfileUser
+
+	result := db.Find(&Profile, "firstname = ? OR lastname = ? OR employee_id = ?", search, search, search)
+
+	if result.RowsAffected == 0 {
+		return c.SendStatus(404)
+	}
+	return c.Status(200).JSON(&Profile)
 }

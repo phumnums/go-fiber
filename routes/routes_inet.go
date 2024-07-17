@@ -15,7 +15,6 @@ func InetRoutes(app *fiber.App) {
 	profile := v1.Group("/profile")
 
 	profile.Get("/", c.GetProfile)
-	profile.Get("/:id", c.GetProfileByID)
 
 	// middleware
 	app.Use(basicauth.New(basicauth.Config{
@@ -70,6 +69,9 @@ func InetRoutes(app *fiber.App) {
 	//CRUD profile User Project
 
 	profile.Post("/", c.AddProfile)
+	profile.Get("/age", c.GetAgeProfile)
+	profile.Get("/filter", c.GetSearchProfile)
+	profile.Get("/:id", c.GetProfileByID)
 	profile.Put("/:id", c.UpdateProfile)
 	profile.Delete("/:id", c.RemoveProfile)
 

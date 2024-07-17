@@ -67,3 +67,22 @@ type ProfileUser struct {
 	Email       string `json:"email"`
 	Tel         string `json:"tel"`
 }
+
+type AgeProfile struct {
+	Employee string `json:"employee"`
+	Name     string `json:"name"`
+	Lastname string `json:"lastname"`
+	Age      int    `json:"age"`
+	Gen      string `json:"gen"`
+}
+
+type ResultAgeProfile struct {
+	Data    []AgeProfile `json:"data"`
+	Count   int          `json:"count"`
+	Name    string       `json:"name"`
+	SumGenz int          `json:"countGenz"`
+	SumGenY int          `json:"countGenY"`
+	SumGenX int          `json:"countGenX"`
+	SumBB   int          `json:"countBabyBoomer"`
+	SumGI   int          `json:"countGI"`
+}
