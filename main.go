@@ -36,4 +36,6 @@ func main() {
 	initDatabase()
 	routes.InetRoutes(app) // routes api in fuction InetRoutes
 	app.Listen(":3000")
+
+	//test
 }
